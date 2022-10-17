@@ -13,22 +13,23 @@ CREATE TABLE users (
     is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-CREATE TABLE companies (
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    website TEXT NOT NULL,
-    phone_number TEXT,
-    address TEXT,
-    linkedinlink TEXT,
-    recruiter_phonenumber TEXT
-);
+-- CREATE TABLE companies (
+--     id SERIAL PRIMARY KEY,
+--     name TEXT NOT NULL,
+--     website TEXT NOT NULL,
+--     phone_number TEXT,
+--     address TEXT,
+--     linkedinlink TEXT,
+--     recruiter_phonenumber TEXT
+-- );
 
 CREATE TABLE applications (
     id SERIAL PRIMARY KEY,
     role TEXT NOT NULL,
+    company_name TEXT NOT NULL,
     jobpostlink TEXT NOT NULL,
+    location TEXT,
     dateofapplication DATE,
-    users_id INTEGER REFERENCES users ON DELETE CASCADE,
-    company_id INTEGER REFERENCES users ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users ON DELETE CASCADE,
     status TEXT
 );

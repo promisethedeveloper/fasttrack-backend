@@ -7,17 +7,19 @@ VALUES('Promise',
         'https://www.linkedin.com/in/promisemorka/',
         TRUE);
 
-INSERT INTO companies (name, website, phone_number, address, linkedinlink, recruiter_phonenumber)
-VALUES('ABC Tech',
-        'https://abctech.com',
-        '2401234567',
-        '2892 ABC Tech Drive',
-        'https://www.linkedin.com/jobs/',
-        '24012334566');
+-- INSERT INTO companies (name, website, phone_number, address, linkedinlink, recruiter_phonenumber)
+-- VALUES('ABC Tech',
+--         'https://abctech.com',
+--         '2401234567',
+--         '2892 ABC Tech Drive',
+--         'https://www.linkedin.com/jobs/',
+--         '24012334566');
 
-INSERT INTO applications (role, jobpostlink, users_id, company_id, status)
+INSERT INTO applications (role, company_name, jobpostlink, location, dateofapplication, user_id, status)
 VALUES ('Software Engineer',
+        'ABC Tech',
         'https://abctech.com/techjobs',
-        1,
+        'Washington DC',
+        '2022-10-01',
         1,
         'Applied');
