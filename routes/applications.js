@@ -68,7 +68,7 @@ router.get("/", async (req, res, next) => {
 	}
 });
 
-router.patch("/:joblink", async (req, res, next) => {
+router.patch("/:id", async (req, res, next) => {
 	try {
 		const validator = jsonschema.validate(req.body, applicationUpdateSchema);
 		if (!validator.valid) {
@@ -76,8 +76,17 @@ router.patch("/:joblink", async (req, res, next) => {
 			throw new BadRequestError(errs);
 		}
 
-		const application = await Application.update(req.params.joblink, req.body);
+		const application = await Application.update(req.params.id, req.body);
 		return res.json({ application });
+	} catch (error) {
+		return next(error);
+	}
+});
+
+router.delete("/:id", async (req, res, next) => {
+	try {
+		await Application.delete(req.params.id);
+		return res.json({ deleted: req.params.id });
 	} catch (error) {
 		return next(error);
 	}

@@ -98,24 +98,44 @@ class Application {
 	 * Throws NotFoundError if not found
 	 */
 
-	static async update(joblink, data) {
+	static async update(id, data) {
 		const { setCols, values } = sqlForPartialUpdate(data, {
 			companyName: "company_name",
 		});
-		const handleVarIdx = "$" + (values.length + 1);
+		const idVarIdx = "$" + (values.length + 1);
 		const querySql = `UPDATE applications
                             SET ${setCols}
-                            WHERE handle = ${handleVarIdx}
+                            WHERE id = ${idVarIdx}
                             RETURNING role,
                                     company_name AS "companyName",
                                     jobpostlink,
                                     location
                                     dateofapplication`;
-		const result = await db.query(querySql, [...values, joblink]);
+		const result = await db.query(querySql, [...values, id]);
 		const application = result.rows[0];
 
-		if (!application) throw new NotFoundError(`No application: ${joblink}`);
+		if (!application) throw new NotFoundError(`No application: ${id}`);
 		return application;
+	}
+
+	/** Delete given application from database; returns undefined
+	 *
+	 * Throws NotFoundError if appliaction is not found
+	 */
+	static async delete(id) {
+		const result = await db.query(
+			`DELETE FROM 
+                applications
+                WHERE id = $1
+                RETURNING id`,
+			[id]
+		);
+
+		const application = result.rows[0];
+
+		if (!application) {
+			throw new NotFoundError(`No application: ${id}`);
+		}
 	}
 }
 

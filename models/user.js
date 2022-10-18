@@ -19,7 +19,7 @@ class User {
 	 *
 	 * Throws UnauthorizedError is user not found or wrong password.
 	 **/
-	static async authenticate(email, password) {
+	static async authenticate(username, password) {
 		// try to find user first
 		const result = await db.query(
 			`SELECT first_name AS "firstName", 
@@ -30,8 +30,8 @@ class User {
                     linkedinlink,
                     is_admin AS "isAdmin"
             FROM users
-                WHERE email = $1`,
-			[email]
+                WHERE username = $1`,
+			[username]
 		);
 
 		const user = result.rows[0];
@@ -57,6 +57,7 @@ class User {
 	static async register({
 		firstName,
 		lastName,
+		username,
 		email,
 		password,
 		githublink,
@@ -64,25 +65,26 @@ class User {
 		isAdmin,
 	}) {
 		const duplicateCheck = await db.query(
-			`SELECT email 
+			`SELECT username 
                 FROM users 
-                WHERE email = $1`,
-			[email]
+                WHERE username = $1`,
+			[username]
 		);
 
 		if (duplicateCheck.rows[0]) {
-			throw new BadRequestError(`Duplicate email: ${email}`);
+			throw new BadRequestError(`Username ${username} is already in use`);
 		}
 
 		const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 		const result = await db.query(
-			`INSERT INTO users (first_name, last_name, email, password, githublink, linkedinlink, is_admin)
+			`INSERT INTO users (first_name, last_name, username, email, password, githublink, linkedinlink, is_admin)
                 VALUES($1, $2, $3, $4, $5, $6, $7)
-                RETURNING first_name AS "firstName", last_name AS "lastName", email, is_Admin AS "isAdmin"`,
+                RETURNING first_name AS "firstName", last_name AS "lastName", username, email, password, githublink, linkedinlink, is_Admin AS "isAdmin"`,
 			[
 				firstName,
 				lastName,
 				email,
+				username,
 				hashedPassword,
 				githublink,
 				linkedinlink,
@@ -103,13 +105,13 @@ class User {
 
 	static async findAll() {
 		let result = await db.query(
-			`SELECT email,
+			`SELECT username,
                     first_name AS "firstName",
                     last_name AS "lastName",
                     email,
                     is_Admin AS "isAdmin"
             FROM users
-            ORDER BY email`
+            ORDER BY username`
 		);
 
 		return result.rows;
@@ -126,15 +128,15 @@ class User {
 	 *                                }
 	 */
 
-	static async get(email) {
+	static async get(username) {
 		const userRes = await db.query(
 			`SELECT first_name AS "firstName",
                 last_name AS "lastName,
                 email,
                 is_admin AS "isAdmin",
                 FROM users
-                WHERE email = $1`,
-			[email]
+                WHERE username = $1`,
+			[username]
 		);
 
 		const user = userRes.rows;
